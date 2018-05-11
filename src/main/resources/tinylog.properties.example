@@ -1,0 +1,10 @@
+# http://www.tinylog.org/configuration for further information
+
+tinylog.writingthread = true
+
+tinylog.writer1 = console
+tinylog.writer1.level = info
+
+tinylog.writer2 = file
+tinylog.writer2.filename = log.txt
+tinylog.writer2.level = warning
