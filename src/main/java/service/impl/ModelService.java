@@ -166,23 +166,23 @@ public class ModelService
 
     private Map<FieldName, FieldValue> prepareEvaluationArgs(Evaluator evaluator, ModelInputFields inputFields)
     {
-        Map<String, Object> inputFieldsAsMap = inputFields.getFields();
-
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
-        List<InputField> evaluatorInputFields = evaluator.getActiveFields();
+        List<InputField> evaluatorFields = evaluator.getActiveFields();
 
-        for (InputField evaluatorInputField : evaluatorInputFields)
+        for (InputField evaluatorField : evaluatorFields)
         {
-            FieldName evaluatorInputFieldName = evaluatorInputField.getName();
-            Object inputValue = inputFieldsAsMap.get(evaluatorInputFieldName.getValue());
+            FieldName evaluatorFieldName = evaluatorField.getName();
+            String evaluatorFieldNameValue = evaluatorFieldName.getValue();
+
+            Object inputValue = inputFields.getFields().get(evaluatorFieldNameValue);
 
             if (inputValue == null)
             {
-                Logger.warn("Model value not found for the following field [{}]", evaluatorInputFieldName.getValue());
+                Logger.warn("Model value not found for the following field [{}]", evaluatorFieldNameValue);
             }
 
-            arguments.put(evaluatorInputFieldName, evaluatorInputField.prepare(inputValue));
+            arguments.put(evaluatorFieldName, evaluatorField.prepare(inputValue));
         }
         return arguments;
     }
