@@ -1,11 +1,11 @@
-LightningScorer - Blazing fast PMML scoring web service
+LightningScorer - Blazing fast PMML scoring web service [![Build Status](https://travis-ci.org/sezinkarli/lightningscorer.png?branch=master)](https://travis-ci.org/sezinkarli/lightningscorer)
 ========
 
 LightningScorer is a lightning fast web service for scoring PMML files built with an emphasis on speed, reliability and simplicity.
 
 # Features
 
-* Fast. LightningScorer boasts of [Rapidoid](https://github.com/rapidoid/rapidoid) - under the hood which allows you to break speed records. See our benchmarks below.
+* Fast. LightningScorer is probably the fastest PMML scoring rest api out there. See our benchmarks below.
 * Reliable. Support for PMML specification 3.0 to 4.3 thanks to [JPMML-Evaluator](https://github.com/jpmml/jpmml-evaluator) as PMML engine.
 * Easy to use.
 	* Simple API for Model deploy, undeploy and score operations
