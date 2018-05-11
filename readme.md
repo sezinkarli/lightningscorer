@@ -23,9 +23,9 @@ As logging can change the performance of each call, we set log level to minimum 
 ### Results
 Results are in terms of seconds and the lower the better.
 
-| Undeploy | Deploy | Score |
+| Deploy | Score | Undeploy|
 | ----------- | --------  | ----------- |
-| ![Undeploy benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/undeploy-performance.png) | ![Deploy benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/deploy-performance.png) | ![Score benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/score-performance.png) |
+| ![Deploy benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/deploy-performance.png) | ![Score benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/score-performance.png) | ![Undeploy benchmark](https://raw.githubusercontent.com/sezinkarli/lightningscorer/master/undeploy-performance.png)|
 
 
 # Installation and Usage
