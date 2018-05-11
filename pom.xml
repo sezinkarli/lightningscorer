@@ -7,6 +7,33 @@
     <groupId>com.sezinkarli</groupId>
     <artifactId>lightningscorer</artifactId>
     <version>1.0</version>
+    <packaging>jar</packaging>
+
+    <name>LightningScorer</name>
+    <url>https://github.com/sezinkarli/lightningscorer</url>
+    <description>Lightning fast web service for machine learning model scoring</description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>sezinkarli</id>
+            <name>Sezin Karli</name>
+            <url>http://www.sezinkarli.com</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/sezinkarli/lightningscorer.git</connection>
+        <developerConnection>scm:git:git@github.com:sezinkarli/lightningscorer.git</developerConnection>
+        <url>https://github.com/sezinkarli/lightningscorer</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -86,6 +113,31 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.source}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
                 </configuration>
             </plugin>
 
