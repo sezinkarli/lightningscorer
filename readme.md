@@ -15,7 +15,7 @@ LightningScorer is a lightning fast web service for scoring PMML files built wit
 # Benchmark
 
 ### How
-After a cold start for servers, 6K models are deployed, scored and undeployed for 10 cycles. 
+After a cold start for servers, 6K models are deployed, scored and undeployed sequentially for 10 cycles. 
 Time is measured for each request and added up.
 We use Openscoring as baseline because this is one of the most successful PMML scoring rest api out there.
 As logging can change the performance of each call, we set log level to minimum so that we can be fair while evaluating.
