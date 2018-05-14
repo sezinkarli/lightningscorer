@@ -39,6 +39,14 @@ public class ModelController extends ParentController
         resp.json(toResponse(true));
     }
 
+    @DELETE(value = "/")
+    public void undeployAll(Resp resp)
+    {
+        modelService.undeployAll();
+
+        resp.json(toResponse(true));
+    }
+
     @POST(value = "/{modelId}/score")
     public void score(String modelId, ModelInputFields inputFields, Resp resp)
     {

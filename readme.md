@@ -86,6 +86,7 @@ REST API endpoints:
 | GET | /model/ids | Get all model ids |
 | GET | /model/additionals | Get additional parameters of models |
 | GET | /model/{modelId}/additional | Get additional parameters of the given model id {modelId} |
+| DELETE | /model | Undeploy all models|
 
 If your request is successful the response of the server will be in this format:
 ```
@@ -256,6 +257,25 @@ Sample response:
 		"key2":"value2"
 	}
 	,
+	"success":true
+}
+```
+
+### Total Model Undeployment
+
+##### DELETE /model
+
+Deploys all models.
+
+Sample curl:
+```
+curl -X DELETE localhost:8080/model
+```
+
+Sample success response:
+```
+{
+	"data":true,
 	"success":true
 }
 ```

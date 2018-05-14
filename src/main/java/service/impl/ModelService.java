@@ -117,6 +117,12 @@ public class ModelService
         Logger.info("Model removed with model id: [{}]", modelId);
     }
 
+    public void undeployAll()
+    {
+        modelIdToDetailContentMap = new ConcurrentHashMap<>();
+        Logger.info("All models removed");
+    }
+
     public List<String> getAllModelIds()
     {
        return Collections.list(modelIdToDetailContentMap.keys());
