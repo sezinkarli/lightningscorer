@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import domain.DetailedModelContent;
 import domain.ModelInputFields;
 import domain.ScoringResult;
+import exception.AdditionalParametersException;
 import exception.EvaluatorCreationException;
 import exception.ModelNotFoundException;
 import exception.ScoringException;
@@ -87,7 +88,7 @@ public class ModelService
 
         DetailedModelContent detailedModelContent = modelIdToDetailContentMap.get(modelId);
 
-        if (detailedModelContent == null || detailedModelContent.getEvaluator() == null)
+        if (detailedModelContent == null)
         {
             Logger.error("Model with given id cant be found: [{}]", modelId);
             throw new IllegalArgumentException("Model with given id cant be found");
@@ -95,8 +96,13 @@ public class ModelService
 
         try
         {
-            Evaluator evaluator = detailedModelContent.getEvaluator();
-            ScoringResult scoringResult = new ScoringResult(score(evaluator, inputFields));
+            if (detailedModelContent.getEvaluator() == null)
+            {
+                Logger.error("Model with given id does not have an evaluator: [{}]", modelId);
+                throw new IllegalArgumentException("Model with given id does not have an evaluator");
+            }
+
+            ScoringResult scoringResult = new ScoringResult( score(detailedModelContent.getEvaluator(), inputFields) );
             Logger.info("Model uploaded with model id: [{}]. Result is [{}]", modelId, scoringResult.getResult());
 
             return scoringResult;
@@ -113,13 +119,20 @@ public class ModelService
 
         validateModelAvailability(modelId);
 
-        modelIdToDetailContentMap.remove(modelId);
-        Logger.info("Model removed with model id: [{}]", modelId);
+        DetailedModelContent removedObj = modelIdToDetailContentMap.remove(modelId);
+
+        if (removedObj == null)
+        {
+            Logger.warn("Could not remove model. Probably already removed by another request. Model id is: [{}]", modelId);
+        } else
+        {
+            Logger.info("Model removed with model id: [{}]", modelId);
+        }
     }
 
     public void undeployAll()
     {
-        modelIdToDetailContentMap = new ConcurrentHashMap<>();
+        modelIdToDetailContentMap.clear();
         Logger.info("All models removed");
     }
 
@@ -130,9 +143,16 @@ public class ModelService
 
     public Map<String, Map<String, String>> getAllAdditionalParameters()
     {
-        return modelIdToDetailContentMap.entrySet().stream()
-                .filter(entry -> (entry.getValue() != null && entry.getValue().getAdditionalParameters() != null))
-                .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().getAdditionalParameters()));
+        try
+        {
+            return modelIdToDetailContentMap.entrySet().stream()
+                    .filter(entry -> (entry.getValue() != null && entry.getValue().getAdditionalParameters() != null))
+                    .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().getAdditionalParameters()));
+        } catch (Exception e)
+        {
+            Logger.error(e, "Exception during preparation of additional parameters");
+            throw new AdditionalParametersException("Exception during preparation of additional parameters", e);
+        }
     }
 
     public Map<String, String> getAdditionalParameter(String modelId)
@@ -149,7 +169,15 @@ public class ModelService
             throw new ModelNotFoundException("Given model id is empty: " + modelId);
         }
 
-        Map<String, String> additionalParameters = modelContent.getAdditionalParameters();
+        Map<String, String> additionalParameters = null;
+        try
+        {
+            additionalParameters = modelContent.getAdditionalParameters();
+        } catch (Exception e)
+        {
+            Logger.error(e, "Exception during retrieval of additional parameters");
+            throw new AdditionalParametersException("Exception during retrieval of additional parameters", e);
+        }
 
         if (additionalParameters == null)
         {
