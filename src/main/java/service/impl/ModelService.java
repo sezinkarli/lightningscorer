@@ -21,31 +21,22 @@ import org.pmw.tinylog.Logger;
 import org.rapidoid.annotation.Service;
 import org.rapidoid.io.Upload;
 
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 public class ModelService
 {
-    private ConcurrentHashMap<String, DetailedModelContent> modelIdToDetailContentMap;
-
-    @PostConstruct
-    private void initialize()
-    {
-        modelIdToDetailContentMap = new ConcurrentHashMap<>();
-    }
+    @Inject
+    private ModelHolderService modelHolderService;
 
     public void deploy(String modelId, Upload upload, Map<String, String> additionalParameters)
     {
         validateModelId(modelId);
-
         validateUploadFile(modelId, upload);
 
         DetailedModelContent content = new DetailedModelContent();
@@ -70,12 +61,7 @@ public class ModelService
             throw new EvaluatorCreationException("Exception during unmarshalling and verification of model", e);
         }
 
-        DetailedModelContent addedObj = modelIdToDetailContentMap.put(modelId, content);
-
-        if (addedObj != null)
-        {
-            Logger.info("Model id [{}] replaced with new model", modelId);
-        }
+        modelHolderService.put(modelId, content);
 
         Logger.info("Model uploaded with model id: [{}]", modelId);
     }
@@ -83,19 +69,12 @@ public class ModelService
     public ScoringResult score(String modelId, ModelInputFields inputFields)
     {
         validateModelId(modelId);
-
         validateModelInputFields(modelId, inputFields);
-
-        DetailedModelContent detailedModelContent = modelIdToDetailContentMap.get(modelId);
-
-        if (detailedModelContent == null)
-        {
-            Logger.error("Model with given id cant be found: [{}]", modelId);
-            throw new IllegalArgumentException("Model with given id cant be found");
-        }
 
         try
         {
+            DetailedModelContent detailedModelContent = modelHolderService.get(modelId);
+
             if (detailedModelContent.getEvaluator() == null)
             {
                 Logger.error("Model with given id does not have an evaluator: [{}]", modelId);
@@ -117,57 +96,30 @@ public class ModelService
     {
         validateModelId(modelId);
 
-        validateModelAvailability(modelId);
-
-        DetailedModelContent removedObj = modelIdToDetailContentMap.remove(modelId);
-
-        if (removedObj == null)
-        {
-            Logger.warn("Could not remove model. Probably already removed by another request. Model id is: [{}]", modelId);
-        } else
-        {
-            Logger.info("Model removed with model id: [{}]", modelId);
-        }
+        modelHolderService.remove(modelId);
     }
 
     public void undeployAll()
     {
-        modelIdToDetailContentMap.clear();
+        modelHolderService.clear();
         Logger.info("All models removed");
     }
 
     public List<String> getAllModelIds()
     {
-       return Collections.list(modelIdToDetailContentMap.keys());
+        return modelHolderService.getAllModelIds();
     }
 
     public Map<String, Map<String, String>> getAllAdditionalParameters()
     {
-        try
-        {
-            return modelIdToDetailContentMap.entrySet().stream()
-                    .filter(entry -> (entry.getValue() != null && entry.getValue().getAdditionalParameters() != null))
-                    .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().getAdditionalParameters()));
-        } catch (Exception e)
-        {
-            Logger.error(e, "Exception during preparation of additional parameters");
-            throw new AdditionalParametersException("Exception during preparation of additional parameters", e);
-        }
+        return modelHolderService.getAllAdditionalParameters();
     }
 
     public Map<String, String> getAdditionalParameter(String modelId)
     {
         validateModelId(modelId);
 
-        validateModelAvailability(modelId);
-
-        DetailedModelContent modelContent = modelIdToDetailContentMap.get(modelId);
-
-        if (modelContent == null)
-        {
-            Logger.error("Given model id does not contain any models: [{}]", modelId);
-            throw new ModelNotFoundException("Given model id is empty: " + modelId);
-        }
+        DetailedModelContent modelContent = modelHolderService.get(modelId);
 
         Map<String, String> additionalParameters = null;
         try
@@ -250,15 +202,6 @@ public class ModelService
         {
             Logger.error("Model id is not valid. It is null or empty: [{}]", modelId);
             throw new IllegalArgumentException("Model id is empty");
-        }
-    }
-
-    private void validateModelAvailability(String modelId)
-    {
-        if (!modelIdToDetailContentMap.containsKey(modelId))
-        {
-            Logger.error("Given model id is not uploaded: [{}]", modelId);
-            throw new ModelNotFoundException("Given model id is not uploaded: " + modelId);
         }
     }
 
