@@ -282,4 +282,4 @@ Sample success response:
 
 # License
 
-LightningScorer is released under Apache Public License v2, so it is free to use for both commercial and non-commercial projects.
+LightningScorer is released under GNU Affero General Public License v3.0.
