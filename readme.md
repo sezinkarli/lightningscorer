@@ -81,6 +81,7 @@ REST API endpoints:
 | HTTP method | Endpoint | Description |
 | ----------- | --------  | ----------- |
 | POST | /model/{modelId} | Deploy model with model id {modelId} |
+| GET | /model/{modelId} | Get summary of model id {modelId} |
 | DELETE | /model/{modelId} | Undeploy model with model id {modelId}|
 | POST | /model/{modelId}/score | Score model with model id {modelId} |
 | GET | /model/ids | Get all model ids |
@@ -136,6 +137,60 @@ Sample success response:
 	"success":true
 }
 ```
+
+##### GET /model/{modelId}
+
+Get summary of model id {modelId}.
+You can fetch the basic form which contains Machine Learning model name.
+Or you can fetch the extended form which also contains model input and output parameters.
+If there are no model found with the given model id, it will throw an exception.
+
+
+
+Sample curl:
+```
+curl -X GET http://localhost:8080/model/123456
+```
+
+Sample success response:
+```
+{
+    "data": {
+        "summary": "Tree model",
+        "inputFields": null,
+        "outputFields": null
+    },
+    "success": true
+}
+```
+
+Sample curl with extended flag:
+```
+curl -X GET http://localhost:8080/model/123456?extended=TRUE
+curl -X GET http://localhost:8080/model/123456?extended=true
+curl -X GET http://localhost:8080/model/123456?extended=1
+```
+
+Sample success response:
+```
+{
+    "data": {
+        "summary": "Tree model",
+        "inputFields": "[InputField{name=sepal_length, dataType=DOUBLE, opType=CONTINUOUS}, 
+                        InputField{name=sepal_width, dataType=DOUBLE, opType=CONTINUOUS}, 
+                        InputField{name=petal_length, dataType=DOUBLE, opType=CONTINUOUS}, 
+                        InputField{name=petal_width, dataType=DOUBLE, opType=CONTINUOUS}]",
+        "outputFields": "[TargetField{name=class, dataType=STRING, opType=CATEGORICAL}]"
+    },
+    "success": true
+}
+```
+
+As you can see, the model has 4 input fields: sepal_length, sepal_width, petal_length, petal_width.
+They are all double fields.
+There is only a single output which returns "class" as categorical value.
+
+
 
 ### Model Undeployment
 

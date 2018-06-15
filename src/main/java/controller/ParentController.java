@@ -20,4 +20,23 @@ public class ParentController
                 .filter(entry -> !exceptions.contains(entry.getKey()))
                 .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
     }
+
+    public boolean getRequestParamAsBoolean(Req req, String fieldName)
+    {
+        Map<String, String> params = req.params();
+
+        if (!params.containsKey(fieldName))
+        {
+            return false;
+        }
+
+        String value = params.get(fieldName);
+
+        if (value != null)
+        {
+            value = value.toLowerCase();
+            return value.equals("true") || value.equals("1");
+        }
+        return false;
+    }
 }
