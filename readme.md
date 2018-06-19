@@ -1,4 +1,4 @@
-LightningScorer - Blazing fast PMML scoring web service [![Build Status](https://travis-ci.org/sezinkarli/lightningscorer.png?branch=master)](https://travis-ci.org/sezinkarli/lightningscorer)
+<img src="icons8-lightning-bolt-100.png" width="64px" align="center" alt="LightningScorer">LightningScorer - Blazing fast PMML scoring web service [![Build Status](https://travis-ci.org/sezinkarli/lightningscorer.png?branch=master)](https://travis-ci.org/sezinkarli/lightningscorer)
 ========
 
 LightningScorer is a lightning fast web service for scoring PMML files built with an emphasis on speed, reliability and simplicity.
