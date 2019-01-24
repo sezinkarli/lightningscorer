@@ -24,10 +24,12 @@ import org.rapidoid.io.Upload;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ModelService
@@ -42,11 +44,7 @@ public class ModelService
 
         DetailedModelContent content = new DetailedModelContent();
         content.setFilename(upload.filename());
-
-        if (additionalParameters != null && !additionalParameters.isEmpty())
-        {
-            content.setAdditionalParameters(additionalParameters);
-        }
+        content.setAdditionalParameters(Optional.ofNullable(additionalParameters));
 
         try
         {
@@ -147,7 +145,7 @@ public class ModelService
 
         DetailedModelContent modelContent = modelHolderService.get(modelId);
 
-        Map<String, String> additionalParameters = null;
+        Optional<Map<String, String>> additionalParameters;
         try
         {
             additionalParameters = modelContent.getAdditionalParameters();
@@ -157,14 +155,11 @@ public class ModelService
             throw new AdditionalParametersException("Exception during retrieval of additional parameters", e);
         }
 
-        if (additionalParameters == null)
-        {
-            additionalParameters = new HashMap<>();
-        }
+        Map<String, String> result = additionalParameters.orElse(Collections.emptyMap());
 
-        Logger.info("Additional parameters are fetched for model id: [{}]. Result is [{}]", modelId, additionalParameters);
+        Logger.info("Additional parameters are fetched for model id: [{}]. Result is [{}]", modelId, result);
 
-        return additionalParameters;
+        return result;
     }
 
     private Map<FieldName, FieldValue> prepareEvaluationArgs(Evaluator evaluator, ModelInputFields inputFields)
