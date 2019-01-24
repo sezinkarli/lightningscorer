@@ -4,13 +4,14 @@ import org.jpmml.evaluator.Evaluator;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public class DetailedModelContent implements Serializable
 {
     private static final long serialVersionUID = 1896212006782157146L;
 
     private String filename;
-    private Map<String, String> additionalParameters;
+    private Optional<Map<String, String>> additionalParameters;
     private Evaluator evaluator;
 
     public String getFilename()
@@ -23,12 +24,12 @@ public class DetailedModelContent implements Serializable
         this.filename = filename;
     }
 
-    public Map<String, String> getAdditionalParameters()
+    public Optional<Map<String, String>> getAdditionalParameters()
     {
         return additionalParameters;
     }
 
-    public void setAdditionalParameters(Map<String, String> additionalParameters)
+    public void setAdditionalParameters(Optional<Map<String, String>> additionalParameters)
     {
         this.additionalParameters = additionalParameters;
     }

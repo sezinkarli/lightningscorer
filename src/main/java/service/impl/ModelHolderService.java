@@ -83,8 +83,8 @@ public class ModelHolderService
         try
         {
             return modelIdToDetailContentMap.entrySet().stream()
-                    .filter(entry -> (entry.getValue() != null && entry.getValue().getAdditionalParameters() != null))
-                    .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().getAdditionalParameters()));
+                    .filter(entry -> (entry.getValue() != null && entry.getValue().getAdditionalParameters().isPresent()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().getAdditionalParameters().get()));
         } catch (Exception e)
         {
             Logger.error(e, "Exception during preparation of additional parameters");
