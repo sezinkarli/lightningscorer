@@ -34,8 +34,13 @@ import java.util.Optional;
 @Service
 public class ModelService
 {
-    @Inject
     private ModelHolderService modelHolderService;
+
+    @Inject
+    public ModelService(ModelHolderService modelHolderService)
+    {
+        this.modelHolderService = modelHolderService;
+    }
 
     public void deploy(String modelId, Upload upload, Map<String, String> additionalParameters)
     {

@@ -19,8 +19,13 @@ public class ModelController extends ParentController
     private static final String FORM_PARAMETER_NAME_FOR_FILENAME = "model";
     private static final String EXTENDED_PARAMETER_FOR_SUMMARY = "extended";
 
-    @Inject
     private ModelService modelService;
+
+    @Inject
+    public ModelController(ModelService modelService)
+    {
+        this.modelService = modelService;
+    }
 
     @POST(value = "/{modelId}")
     public void deploy(String modelId, Req req, Resp resp)
