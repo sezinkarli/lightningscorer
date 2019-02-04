@@ -49,7 +49,7 @@ public class ModelService
 
         DetailedModelContent content = new DetailedModelContent();
         content.setFilename(upload.filename());
-        content.setAdditionalParameters(Optional.ofNullable(additionalParameters));
+        content.setAdditionalParameters(additionalParameters);
 
         try
         {
@@ -153,7 +153,7 @@ public class ModelService
         Optional<Map<String, String>> additionalParameters;
         try
         {
-            additionalParameters = modelContent.getAdditionalParameters();
+            additionalParameters = Optional.of(modelContent.getAdditionalParameters());
         } catch (Exception e)
         {
             Logger.error(e, "Exception during retrieval of additional parameters");
