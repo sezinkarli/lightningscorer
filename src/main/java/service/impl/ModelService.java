@@ -1,6 +1,5 @@
 package service.impl;
 
-import com.google.common.base.Strings;
 import domain.DetailedModelContent;
 import domain.ModelInputFields;
 import domain.ModelSummary;
@@ -36,16 +35,19 @@ public class ModelService
 {
     private ModelHolderService modelHolderService;
 
+    private ValidatorService validator;
+
     @Inject
-    public ModelService(ModelHolderService modelHolderService)
+    public ModelService(ModelHolderService modelHolderService, ValidatorService validator)
     {
         this.modelHolderService = modelHolderService;
+        this.validator = validator;
     }
 
     public void deploy(String modelId, Upload upload, Map<String, String> additionalParameters)
     {
-        validateModelId(modelId);
-        validateUploadFile(modelId, upload);
+        validator.validateModelId(modelId);
+        validator.validateUploadFile(modelId, upload);
 
         DetailedModelContent content = new DetailedModelContent();
         content.setFilename(upload.filename());
@@ -72,14 +74,14 @@ public class ModelService
 
     public ModelSummary getSummary(String modelId, boolean isExtended)
     {
-        validateModelId(modelId);
+        validator.validateModelId(modelId);
 
         try
         {
             DetailedModelContent detailedModelContent = modelHolderService.get(modelId);
             Evaluator evaluator = detailedModelContent.getEvaluator();
 
-            validateEvaluator(evaluator, modelId);
+            validator.validateEvaluator(evaluator, modelId);
 
             ModelSummary modelSummary = new ModelSummary(evaluator.getSummary());
 
@@ -100,15 +102,15 @@ public class ModelService
 
     public ScoringResult score(String modelId, ModelInputFields inputFields)
     {
-        validateModelId(modelId);
-        validateModelInputFields(modelId, inputFields);
+        validator.validateModelId(modelId);
+        validator.validateModelInputFields(modelId, inputFields);
 
         try
         {
             DetailedModelContent detailedModelContent = modelHolderService.get(modelId);
             Evaluator evaluator = detailedModelContent.getEvaluator();
 
-            validateEvaluator(evaluator, modelId);
+            validator.validateEvaluator(evaluator, modelId);
 
             ScoringResult scoringResult = new ScoringResult( score(evaluator, inputFields) );
             Logger.info("Model uploaded with model id: [{}]. Result is [{}]", modelId, scoringResult.getResult());
@@ -123,7 +125,7 @@ public class ModelService
 
     public void undeploy(String modelId)
     {
-        validateModelId(modelId);
+        validator.validateModelId(modelId);
 
         modelHolderService.remove(modelId);
     }
@@ -146,7 +148,7 @@ public class ModelService
 
     public Map<String, String> getAdditionalParameter(String modelId)
     {
-        validateModelId(modelId);
+        validator.validateModelId(modelId);
 
         DetailedModelContent modelContent = modelHolderService.get(modelId);
 
@@ -213,45 +215,9 @@ public class ModelService
         return result;
     }
 
-    private void validateModelId(String modelId)
-    {
-        if (Strings.isNullOrEmpty(modelId))
-        {
-            Logger.error("Model id is not valid. It is null or empty: [{}]", modelId);
-            throw new IllegalArgumentException("Model id is empty");
-        }
-    }
-
-    private void validateUploadFile(String modelId, Upload upload)
-    {
-        if (upload == null)
-        {
-            Logger.error("No file uploaded for model id [{}]", modelId);
-            throw new IllegalArgumentException("Nothing is uploaded");
-        }
-    }
-
-    private void validateEvaluator(Evaluator evaluator, String modelId)
-    {
-        if (evaluator == null)
-        {
-            Logger.error("Model with given id does not have an evaluator: [{}]", modelId);
-            throw new IllegalArgumentException("Model with given id does not have an evaluator");
-        }
-    }
-
-    private void validateModelInputFields(String modelId, ModelInputFields inputFields)
-    {
-        if (inputFields == null || inputFields.getFields() == null || inputFields.getFields().isEmpty())
-        {
-            Logger.error("Model input fields are null or empty for model id [{}]", modelId);
-            throw new IllegalArgumentException("Model input fields are null or empty");
-        }
-    }
-
     private void addExtendedModelInfo(ModelSummary modelSummary, Evaluator evaluator)
     {
-        modelSummary.setInputFields(evaluator.getInputFields() != null ? evaluator.getInputFields().toString() : null);
-        modelSummary.setOutputFields(evaluator.getTargetFields() != null ? evaluator.getTargetFields().toString() : null);
+        modelSummary.setInputFields(evaluator.getInputFields() == null ? null : evaluator.getInputFields().toString());
+        modelSummary.setOutputFields(evaluator.getTargetFields() == null ? null : evaluator.getTargetFields().toString());
     }
 }
